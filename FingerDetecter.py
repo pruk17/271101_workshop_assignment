@@ -69,23 +69,60 @@ while True:
                 Nfing = 2    
             elif cy20 > cy18:
                 Nfing = 3
-            elif cx4 > cx2:
+            elif cx4 < cx2:
                 Nfing = 4
             else:
                 Nfing = 5
+            match Nfing:
+                case 0:
+                    cv2.putText(img, (" "), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                case 1:
+                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                case 2:
+                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                case 3:
+                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                case 4:
+                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Pinky Finger"), (10, 320), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                case 5:
+                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Pinky Finger"), (10, 320), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+                    cv2.putText(img, ("Thumb"), (10, 370), cv2.FONT_HERSHEY_PLAIN, 2,
+                    (0, 255, 0), 3)
+
+
 
             
 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
-    cv2.putText(img, str(int(Nfing)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3,(
-                255, 0, 0), 3)
-    cv2.putText(img,  
-           ("Chaiyapruk Parinyanuntakan"),  
-                (750, 650),  
-                cv2.FONT_HERSHEY_PLAIN, 2,  
-                (0, 255, 255),  
-                3) 
+    cv2.putText(img, str(int(Nfing)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3,
+                (255, 0, 0), 3)
+    cv2.putText(img, ("Chaiyapruk Parinyanuntakan"), (150, 450), cv2.FONT_HERSHEY_PLAIN, 2,  
+                (0, 255, 255), 3) 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
 #Closeing all open windows
