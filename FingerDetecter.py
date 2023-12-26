@@ -9,13 +9,25 @@ cap = cv2.VideoCapture(0)
 mpHands = mp.solutions.hands
 hands = mpHands.Hands()
 mpDraw = mp.solutions.drawing_utils
+def resizeImg(img, square = 10):
+    width = int(img.shape[1] * square/8)
+    height = int(img.shape[0] * square/10)
+    dim = (width, height)
+    return cv2.resize(img, dim, interpolation =cv2.INTER_AREA)
+
+
 
 while True:
     success, img = cap.read()
+    rect, img = cap.read()
+    img = resizeImg(img, square = 15)
+
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     #print(results.multi_hand_landmarks)
-
+    FingerCount = []
+    FingerType= []
+    TotalFinger = 0
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
@@ -25,6 +37,7 @@ while True:
                 if id == 20:
                     id20 = int(id)
                     cy20 = cy
+
                 if id == 18:
                     id18 = int(id)
                     cy18 = cy
@@ -60,69 +73,42 @@ while True:
                 if id == 0:
                     id0 = int(id)
                     cy0 = cy    
+            
 
-            if cy8 > cy6:
-                Nfing = 0
-            elif cy12 > cy10:
-                Nfing = 1
-            elif cy16 > cy14:
-                Nfing = 2    
-            elif cy20 > cy18:
-                Nfing = 3
-            elif cx4 < cx2:
-                Nfing = 4
-            else:
-                Nfing = 5
-            match Nfing:
-                case 0:
-                    cv2.putText(img, (" "), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                case 1:
-                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                case 2:
-                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                case 3:
-                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                case 4:
-                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Pinky Finger"), (10, 320), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                case 5:
-                    cv2.putText(img, ("Index Finger"), (10, 170), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Middle Finger"), (10, 220), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Ring Finger"), (10, 270), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Pinky Finger"), (10, 320), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
-                    cv2.putText(img, ("Thumb"), (10, 370), cv2.FONT_HERSHEY_PLAIN, 2,
-                    (0, 255, 0), 3)
+            if cy8 < cy6:
+                FingerCount.append('1')
+                FingerType.append("Index Finger")
 
-
-
+            if cy12 < cy10:
+                FingerCount.append('2')
+                FingerType.append("Middle Finger")
+      
+            if cy16 < cy14:
+                FingerCount.append('3')
+                FingerType.append("Ring Finger")
+    
+            if cy20 < cy18:
+                FingerCount.append('4')
+                FingerType.append("Pinky Finger")
+          
+            if cx4 > cx2:
+                FingerCount.append('5')
+                FingerType.append("Thumb")
+           
+            TotalFinger = len(FingerCount)
+            if TotalFinger > 5:
+                TotalFinger = 5
+            
             
 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
-    cv2.putText(img, str(int(Nfing)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3,
+    cv2.putText(img, str(int(TotalFinger)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3,
                 (255, 0, 0), 3)
-    cv2.putText(img, ("Chaiyapruk Parinyanuntakan"), (150, 450), cv2.FONT_HERSHEY_PLAIN, 2,  
-                (0, 255, 255), 3) 
+    cv2.putText(img, str(list(FingerType)), (10, 600), cv2.FONT_HERSHEY_PLAIN, 2,
+                (0, 255, 0), 3)
+    cv2.putText(img, ("Chaiyapruk Parinyanuntakan"), (700, 650), cv2.FONT_HERSHEY_PLAIN, 2,  
+                (255, 0, 0), 3) 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
 #Closeing all open windows
