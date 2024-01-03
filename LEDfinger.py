@@ -7,7 +7,11 @@ time.sleep(2.0)
 
 mp_draw=mp.solutions.drawing_utils #use function drawing_utils to draw straight connect landmark point
 mp_hand=mp.solutions.hands #use function hands to find hand on camera
-
+def resizeImg(image, square = 10):
+    width = int(image.shape[1] * square/8)
+    height = int(image.shape[0] * square/10)
+    dim = (width, height)
+    return cv2.resize(image, dim, interpolation =cv2.INTER_AREA)
 
 tipIds=[4,8,12,16,20] # media-pipe position  of fingertips
 
@@ -45,53 +49,6 @@ led_3=board.get_pin('d:11:o')
 led_4=board.get_pin('d:10:o')
 led_5=board.get_pin('d:9:o')
 
-#### LED write function
-
-## controller.py ##
-
-def led(total,led_1,led_2,led_3,led_4,led_5):#creat condition to controll digital out put
-    if total==0:
-        led_1.write(0)
-        led_2.write(0)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    elif total==1:
-        led_1.write(1)
-        led_2.write(0)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    elif total==2:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(0)
-        led_4.write(0)
-        led_5.write(0)
-    elif total==3:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(0)
-        led_5.write(0)
-    elif total==4:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(1)
-        led_5.write(0)
-    elif total==5:
-        led_1.write(1)
-        led_2.write(1)
-        led_3.write(1)
-        led_4.write(1)
-        led_5.write(1)
-
-
-
-######
-
-
 
 video=cv2.VideoCapture(int(cport)) #OpenCamera at index position 0
 
@@ -99,58 +56,116 @@ with mp_hand.Hands(min_detection_confidence=0.5,
                min_tracking_confidence=0.5) as hands:#(min_detection_confidence, min_tracking_confidence) are Value to considered for detect and tracking image
     while True:
         ret,image=video.read() #Read frame in camera video
+        image = resizeImg(image, square = 15)
         image=cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  #convert color BGR to RGB
         image.flags.writeable=False  #to improve nothing drawed in image
         results=hands.process(image) #process image
         image.flags.writeable=True #can drawing  image
         image=cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  #convert color RGB to BGR
-        lmList=[]
+        TotalFinger = 0
+        fingers=[]
+        FingerType= []
+        
         if results.multi_hand_landmarks:
             for hand_landmark in results.multi_hand_landmarks:
                 myHands=results.multi_hand_landmarks[0]
                 for id, lm in enumerate(myHands.landmark):
-                    h,w,c=image.shape
-                    cx,cy= int(lm.x*w), int(lm.y*h)
-                    lmList.append([id,cx,cy])  #input number hand_landmark position and position of spot position hand_landmark
-                mp_draw.draw_landmarks(image, hand_landmark, mp_hand.HAND_CONNECTIONS)  #drawing hand skeleton from hand_landmark point
-        fingers=[]
-        if len(lmList)!=0:
-            #Thumb check (LHS and RHS conditions) (x-position)
-            if lmList[9][1]<lmList[5][1]:
-                if lmList[tipIds[0]][1] > lmList[tipIds[0]-1][1]:
-                    fingers.append(1)
-                else:
-                    fingers.append(0)
-            else:
-                if lmList[tipIds[0]][1] < lmList[tipIds[0]-1][1]:
-                    fingers.append(1)
-                else:
-                    fingers.append(0)
-            #Other finger check (y-position)
-            for id in range(1,5):
-                # Normal condition
-                if lmList[0][2]<lmList[5][2]: #creat condition for count fingers
-                    if lmList[tipIds[id]][2] > lmList[tipIds[id]-2][2]:
-                        fingers.append(1)
-                    else:
-                        fingers.append(0)
-                # Upside down
-                else:
-                    if lmList[tipIds[id]][2] < lmList[tipIds[id]-2][2]:
-                        fingers.append(1)
-                    else:
-                        fingers.append(0)
-            total=fingers.count(1)
+                    h, w, c = image.shape
+                    cx,cy= int(lm.x*w), int(lm.y*h)               
+                    
+                    if id == 20:
+                       id20 = int(id)
+                       cy20 = cy
 
-            led(total,led_1,led_2,led_3,led_4,led_5) #import function in module to control arduino output
+                    if id == 18:
+                       id18 = int(id)
+                       cy18 = cy
+                
+                    if id == 16:
+                       id16 = int(id)
+                       cy16 = cy 
+
+                    if id == 14:
+                       id14 = int(id)
+                       cy14 = cy
+                
+                    if id == 12:
+                       id12 = int(id)
+                       cy12 = cy
+
+                    if id == 10:
+                       id10 = int(id)
+                       cy10 = cy
+                
+                    if id == 8:
+                       id8 = int(id)
+                       cy8 = cy
+
+                    if id == 6:
+                       id6 = int(id)
+                       cy6 = cy
+                
+                    if id == 4:
+                       id4 = int(id)
+                       cx4 = cx
+
+                    if id == 2:
+                       id2 = int(id)
+                       cx2 = cx
+                
+                    if id == 0:
+                       id0 = int(id)
+                       cy0 = cy     
+            
+                if cy8 < cy6:
+                   FingerType.append("Index Finger")
+                   fingers.append("1")
+                   led_1.write(1)
+                else:
+                   led_1.write(0)
+
+                if cy12 < cy10:
+                   FingerType.append("Middle Finger")
+                   fingers.append("1")
+                   led_2.write(1) 
+                else:
+                   led_2.write(0)  
+
+                if cy16 < cy14:
+                   FingerType.append("Ring Finger")
+                   fingers.append("1")  
+                   led_3.write(1)
+                else:
+                   led_3.write(0)
+                
+                if cy20 < cy18:
+                   FingerType.append("Pinky Finger")
+                   fingers.append("1")    
+                   led_4.write(1)
+                else:
+                   led_4.write(0)   
+
+                if cx4 > cx2:
+                   FingerType.append("Thumb") 
+                   fingers.append("1")
+                   led_5.write(1)
+                else:
+                   led_5.write(0)
+            
+                TotalFinger = len(fingers)
+                mp_draw.draw_landmarks(image, hand_landmark, mp_hand.HAND_CONNECTIONS)  #drawing hand skeleton from hand_landmark point
+
+            #led(total,led_1,led_2,led_3,led_4,led_5) #import function in module to control arduino output
             """
             creat condition to put text in frame
 
             """
             if ((results.multi_hand_landmarks))!="None":
                 cv2.rectangle(image, (20, 300), (270, 425), (0, 255, 0), cv2.FILLED)
-                cv2.putText(image, str(total), (45, 375), cv2.FONT_HERSHEY_SIMPLEX,
+                cv2.putText(image, str(int(TotalFinger)), (45, 375), cv2.FONT_HERSHEY_SIMPLEX,
                     2, (255, 0, 0), 5)
+                cv2.putText(image, str(FingerType), (100, 575), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (0, 255, 0), 5)
                 cv2.putText(image, "LED", (100, 375), cv2.FONT_HERSHEY_SIMPLEX,
                     2, (255, 0, 0), 5)
 
